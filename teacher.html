@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Teacher Portal | EduManage Pro</title>
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/dashboard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+.marks-input{width:80px;padding:.35rem .5rem;border:1.5px solid var(--border);border-radius:var(--r-sm);text-align:center;font-weight:700;font-size:.85rem;outline:none;transition:var(--t);}
+.marks-input:focus{border-color:var(--brand-500);box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+.grade-pill{padding:.2rem .6rem;border-radius:var(--r-full);font-size:.7rem;font-weight:800;color:#fff;}
+.grade-A-plus{background:#059669}.grade-A{background:#10b981}.grade-B{background:#3b82f6}.grade-C{background:#f59e0b}.grade-D{background:#ef4444}
+.att-radio{display:flex;gap:.5rem}
+.att-btn{padding:.35rem .75rem;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--t);background:white;color:var(--text-secondary);}
+.att-btn.present{background:var(--success-light);border-color:var(--success);color:var(--success-dark);}
+.att-btn.absent{background:var(--danger-light);border-color:var(--danger);color:var(--danger-dark);}
+</style>
+</head>
+<body>
+<div class="dashboard-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+    <div class="sidebar-logo-text"><h2>EduManage</h2><span>Teacher Portal</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" id="navOverview"><i class="fa-solid fa-house-chimney"></i><span>Overview</span></a>
+    <a href="#" class="nav-item" id="navAssignments"><i class="fa-solid fa-book-open"></i><span>Assignments</span></a>
+    <a href="#" class="nav-item" id="navExams"><i class="fa-solid fa-file-signature"></i><span>Marks Entry</span></a>
+    <a href="#" class="nav-item" id="navManualattendance"><i class="fa-solid fa-list-check"></i><span>Manual Attendance</span></a>
+    <a href="#" class="nav-item" id="navNotices"><i class="fa-solid fa-bullhorn"></i><span>Notice Board</span></a>
+    <div class="nav-label">Reports</div>
+    <a href="#" class="nav-item" id="navAttendance"><i class="fa-solid fa-qrcode"></i><span>QR Scanner</span></a>
+    <a href="#" class="nav-item" id="navGrades"><i class="fa-solid fa-graduation-cap"></i><span>Gradebook</span></a>
+    <a href="#" class="nav-item" id="navStudentMaster"><i class="fa-solid fa-address-book"></i><span>Student Directory</span></a>
+    <a href="#" class="nav-item" id="navLeaves"><i class="fa-solid fa-calendar-minus"></i><span>My Leaves</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="userAvatar">T</div>
+      <div class="sidebar-user-info"><strong id="userName">Teacher Name</strong><span>Faculty Member</span></div>
+    </div>
+    <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign Out</span></button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+  <header class="top-header">
+    <div class="header-left">
+      <div class="breadcrumb">
+        <span class="breadcrumb-root">EduManage Pro</span>
+        <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
+        <span class="breadcrumb-curr" id="breadcrumbCurr">Overview</span>
+      </div>
+    </div>
+    <div class="header-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search class data...">
+    </div>
+    <div class="header-right">
+      <div class="notif-wrapper">
+        <button class="header-icon-btn" id="notifBtn"><i class="fa-solid fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-dropdown-header"><h3>Notifications</h3><span class="badge badge-info">2 New</span></div>
+          <div class="notif-item"><div class="notif-item-icon" style="background:var(--info-light);color:var(--brand-600)"><i class="fa-solid fa-file-signature"></i></div><div><p>New exam scheduled for Class 10</p><span>30 minutes ago</span></div></div>
+          <div class="notif-item"><div class="notif-item-icon" style="background:var(--success-light);color:var(--success-dark)"><i class="fa-solid fa-clipboard-check"></i></div><div><p>Attendance submitted successfully</p><span>Today, 9:00 AM</span></div></div>
+        </div>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-profile">
+        <div class="header-avatar" id="headerAvatar">T</div>
+        <div class="header-profile-info"><strong id="headerName">Teacher</strong><span>Faculty Member</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content animate-fade-in">
+
+    <!-- OVERVIEW -->
+    <div id="sectionOverview">
+      <div class="page-title-row">
+        <div><h1>Teacher Dashboard</h1><p id="currentDate" style="color:var(--text-muted);font-size:.875rem;margin-top:.25rem"></p></div>
+        <button class="btn btn-primary btn-sm" onclick="switchSection('assignments')"><i class="fa-solid fa-plus"></i> Create Assignment</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card stat-blue"><div class="stat-card-top"><div class="stat-icon blue"><i class="fa-solid fa-school"></i></div></div><div class="stat-value">4</div><div class="stat-label">My Classes</div></div>
+        <div class="stat-card stat-green"><div class="stat-card-top"><div class="stat-icon green"><i class="fa-solid fa-tasks"></i></div></div><div class="stat-value" id="assignmentCount">0</div><div class="stat-label">Active Assignments</div></div>
+        <div class="stat-card stat-indigo"><div class="stat-card-top"><div class="stat-icon indigo"><i class="fa-solid fa-users"></i></div></div><div class="stat-value" id="teacherStudentCount">0</div><div class="stat-label">Total Students</div></div>
+        <div class="stat-card stat-amber"><div class="stat-card-top"><div class="stat-icon amber"><i class="fa-solid fa-calendar-day"></i></div></div><div class="stat-value" id="pendingLeavesCount">0</div><div class="stat-label">Pending Leaves</div></div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem">
+        <div class="content-card">
+          <div class="card-header"><h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h2></div>
+          <div class="empty-state"><i class="fa-regular fa-clock"></i><h3>No recent activity</h3><p>Your recent actions will appear here.</p></div>
+        </div>
+        <div class="content-card">
+          <div class="card-header"><h2><i class="fa-solid fa-bullhorn"></i> Important Notices</h2><button class="btn btn-ghost btn-sm" onclick="switchSection('notices')">View All</button></div>
+          <div id="noticeBriefList" style="padding:1.25rem; display:flex; flex-direction:column; gap:1rem">
+            <!-- Notices will be loaded here -->
+            <p style="text-align:center;color:var(--text-muted);font-size:.8rem">Fetching latest notices...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKS ENTRY -->
+    <div id="sectionExams" style="display:none">
+      <div class="page-title-row"><div><h1>Academic Marks Entry</h1><p>Record and submit student examination marks</p></div></div>
+      <div class="content-card">
+        <div class="card-header">
+          <h2><i class="fa-solid fa-pen-to-square"></i> Marks Entry Sheet</h2>
+          <select id="examSelector" class="input-field" style="width:280px"><option value="">Select Scheduled Exam</option></select>
+        </div>
+        <div class="card-body">
+          <div id="marksEntryContainer" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;background:var(--bg-muted);padding:1rem;border-radius:var(--r-md);border:1px solid var(--border)">
+              <div style="display:flex;flex-direction:column;gap:.25rem">
+                <h3 id="selectedExamTitle" style="color:var(--brand-700);font-size:1rem">--</h3>
+                <span style="font-size:.75rem;color:var(--text-muted);font-weight:600" id="maxMarksLabel">Target: 100 Marks</span>
+              </div>
+              <div class="input-group" style="width:160px;margin:0">
+                <label style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">Exam Type</label>
+                <select id="marksExamType" class="input-field">
+                  <option value="class_test">Class Test</option>
+                  <option value="monthly_test">Monthly Test</option>
+                  <option value="mid_term">Mid Term</option>
+                  <option value="annual_exam">Annual Exam</option>
+                  <option value="project">Project / Viva</option>
+                </select>
+              </div>
+              <div class="input-group" style="width:160px;margin:0">
+                <label style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">Total Exam Marks</label>
+                <input type="number" id="globalTotalMarks" class="input-field" value="100" placeholder="e.g. 100" oninput="window.recalculateAllMarks()">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Student Name</th><th>Roll / Email</th><th>Marks Obtained</th><th>Percentage</th><th>Grade</th></tr></thead>
+                <tbody id="marksTableBody"></tbody>
+              </table>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:1.5rem">
+              <button class="btn btn-primary" id="saveMarksBtn"><i class="fa-solid fa-floppy-disk"></i> Finalize &amp; Submit</button>
+            </div>
+          </div>
+          <div id="noExamSelected" class="empty-state"><i class="fa-solid fa-clipboard-list"></i><h3>No exam selected</h3><p>Select a scheduled examination above to begin marks entry.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANUAL ATTENDANCE -->
+    <div id="sectionManualattendance" style="display:none">
+      <div class="page-title-row">
+        <div><h1 id="attSheetTitle">Daily Attendance Register</h1><p id="attClassInfo" style="color:var(--text-muted);font-size:.875rem;font-weight:600"></p></div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <span class="badge badge-info" id="attDateLabel">Date: --</span>
+          <button class="btn btn-secondary btn-sm" id="selectAllAtt"><i class="fa-solid fa-check-double"></i> Mark All Present</button>
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="card-header">
+          <h2><i class="fa-solid fa-list-check"></i> Student Attendance Sheet</h2>
+          <div id="attSummary" style="display:flex;gap:.75rem"></div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Student Name</th><th>Status</th></tr></thead>
+            <tbody id="manualAttendanceBody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;justify-content:flex-end;padding:1.25rem 1.5rem;border-top:1px solid var(--border)">
+          <button class="btn btn-primary" id="submitManualAttBtn"><i class="fa-solid fa-floppy-disk"></i> Save Attendance</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR SCANNER -->
+    <div id="sectionAttendance" style="display:none">
+      <div class="page-title-row"><div><h1>QR Attendance Scanner</h1><p>Scan student QR codes to mark attendance instantly</p></div></div>
+      <div class="content-card" style="max-width:600px;margin:0 auto">
+        <div class="card-header"><h2><i class="fa-solid fa-qrcode"></i> Scanner Interface</h2></div>
+        <div class="card-body" style="text-align:center">
+          <div id="reader" style="width:100%;max-width:440px;margin:0 auto;border-radius:var(--r-lg);overflow:hidden;border:2px solid var(--brand-500)"></div>
+          <div id="scanResult" style="margin-top:1.5rem;padding:1.25rem;border-radius:var(--r-lg);background:var(--success-light);border:1px solid #a7f3d0;display:none">
+            <i class="fa-solid fa-circle-check" style="font-size:2rem;color:var(--success);margin-bottom:.5rem;display:block"></i>
+            <h3 id="scannedStudentName" style="color:var(--success-dark)">--</h3>
+            <p id="scanStatusText" style="font-weight:600;color:var(--success-dark)">Attendance Marked Successfully!</p>
+          </div>
+          <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center">
+            <button class="btn btn-primary" id="startScannerBtn"><i class="fa-solid fa-camera"></i> Start Scanning</button>
+            <button class="btn btn-secondary" id="stopScannerBtn"><i class="fa-solid fa-stop"></i> Stop Camera</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS -->
+    <div id="sectionAssignments" style="display:none">
+      <div class="page-title-row"><div><h1>Assignments &amp; Materials</h1><p>Manage lesson materials and student assignments</p></div>
+        <button class="btn btn-primary" id="newAssignmentBtn"><i class="fa-solid fa-plus"></i> Create New</button>
+      </div>
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-book-open"></i> Published Assignments</h2></div>
+        <div class="table-responsive">
+          <table class="data-table"><thead><tr><th>Title</th><th>Subject</th><th>Deadline</th><th>File</th><th>Action</th></tr></thead><tbody id="assignmentTableBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICES SECTION -->
+    <div id="sectionNotices" style="display:none">
+      <div class="page-title-row"><div><h1>Official Notice Board</h1><p>Stay updated with latest school announcements</p></div></div>
+      <div id="fullNoticeList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:1.5rem">
+        <!-- Full notices load here -->
+      </div>
+    </div>
+
+    <!-- STUDENT DIRECTORY -->
+    <div id="sectionStudentMaster" style="display:none">
+      <div class="page-title-row">
+        <div><h1>Student Directory</h1><p>Comprehensive list of enrolled students</p></div>
+        <div style="display:flex;gap:.75rem">
+          <button class="btn btn-primary btn-sm" onclick="openPromoteModal()"><i class="fa-solid fa-arrow-up-right-dots"></i> Promote Students</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetStudentFilters()"><i class="fa-solid fa-arrows-rotate"></i> Reset Filters</button>
+        </div>
+      </div>
+
+      <div class="content-card" style="margin-bottom: 1.5rem; background: var(--bg-body); border: 1.5px solid var(--border);">
+        <div class="card-body" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+          <div class="input-group" style="flex: 2; min-width: 200px;">
+            <label>Search Student</label>
+            <div class="header-search" style="width: 100%; margin: 0; border: 1.5px solid var(--border);">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="stuSearch" placeholder="Name, Email or ID..." oninput="fetchStudentMaster()">
+            </div>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter by Class</label>
+            <select id="stuFilterClass" class="input-field" onchange="fetchStudentMaster()"><option value="">All Classes</option></select>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter by Section</label>
+            <select id="stuFilterSection" class="input-field" onchange="fetchStudentMaster()"><option value="">All Sections</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-address-book"></i> Enrolled Students</h2></div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Student ID</th><th>Name</th><th>Class / Section</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="studentMasterTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRADEBOOK -->
+    <div id="sectionGrades" style="display:none">
+      <div class="page-title-row"><div><h1>Historical Gradebook</h1><p>Review and filter all submitted examination results</p></div></div>
+      
+      <div class="content-card" style="margin-bottom: 1.5rem; background: var(--bg-body); border: 1.5px solid var(--border);">
+        <div class="card-body" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter Class</label>
+            <select id="gradeFilterClass" class="input-field" onchange="fetchGradebook()"><option value="">All Classes</option></select>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter Section</label>
+            <select id="gradeFilterSection" class="input-field" onchange="fetchGradebook()"><option value="">All Sections</option></select>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Exam Type</label>
+            <select id="gradeFilterType" class="input-field" onchange="fetchGradebook()">
+              <option value="">All Types</option>
+              <option value="class_test">Class Test</option>
+              <option value="monthly_test">Monthly Test</option>
+              <option value="mid_term">Mid Term</option>
+              <option value="annual_exam">Annual Exam</option>
+              <option value="project">Project / Viva</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="fetchGradebook()"><i class="fa-solid fa-rotate"></i> Apply Filters</button>
+          <button class="btn btn-danger btn-sm" id="bulkDeleteGradesBtn" style="display:none; margin-left:auto" onclick="window.handleBulkDeleteGrades()">
+            <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="selectedGradesCount">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-graduation-cap"></i> Grade Records</h2></div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" id="selectAllGrades" onclick="window.toggleSelectAllGrades(this)"></th>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Exam Date</th>
+                <th>Marks</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody id="gradebookTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAVES -->
+    <div id="sectionLeaves" style="display:none">
+      <div class="page-title-row"><div><h1>Leave Management</h1><p>Apply and track your leave requests</p></div>
+        <button class="btn btn-primary" id="requestLeaveBtn"><i class="fa-solid fa-plus"></i> Apply for Leave</button>
+      </div>
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-calendar-minus"></i> Leave History</h2></div>
+        <div class="table-responsive">
+          <table class="data-table"><thead><tr><th>Start Date</th><th>End Date</th><th>Type</th><th>Reason</th><th>Status</th></tr></thead><tbody id="leaveHistoryBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- ASSIGNMENT MODAL -->
+<div id="assignmentModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Post New Assignment</h2><button class="modal-close" id="closeAssignModal"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <form id="assignmentForm" style="display:flex;flex-direction:column;gap:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="input-group"><label>Class</label><select id="assignClass" class="input-field" required><option value="">Select Class</option></select></div>
+          <div class="input-group"><label>Section</label><select id="assignSection" class="input-field" required><option value="">Select Section</option></select></div>
+        </div>
+        <div class="input-group"><label>Subject</label><input type="text" id="assignSubject" class="input-field" placeholder="e.g. Physics" required></div>
+        <div class="input-group"><label>Topic / Title</label><input type="text" id="assignTitle" class="input-field" placeholder="Assignment title" required></div>
+        <div class="input-group"><label>Submission Deadline</label><input type="date" id="assignDeadline" class="input-field" required></div>
+        <div class="input-group"><label>Attachment (File)</label><input type="file" id="assignFile" class="input-field"></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="closeAssignModalBtn">Discard</button>
+      <button class="btn btn-primary" id="submitAssignBtn"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEAVE MODAL -->
+<div id="leaveModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Leave Application</h2><button class="modal-close" id="closeLeaveModal"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div style="background:var(--info-light); border-radius:var(--r-md); padding:.75rem; margin-bottom:1.25rem; border-left:4px solid var(--info)">
+        <h4 style="font-size:.75rem; color:var(--info-dark); margin-bottom:.25rem"><i class="fa-solid fa-circle-info"></i> Leave Policy Highlights</h4>
+        <ul style="font-size:.68rem; color:var(--text-secondary); margin:0; padding-left:1.2rem; line-height:1.4">
+          <li><strong>Sick Leave:</strong> 12 days per year (max 1/month)</li>
+          <li><strong>Casual Leave:</strong> 2 days per month</li>
+          <li><strong>Half Day:</strong> Applied for forenoon or afternoon sessions</li>
+        </ul>
+      </div>
+      <form id="leaveForm" style="display:flex;flex-direction:column;gap:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="input-group"><label>Start Date</label><input type="date" id="leaveStart" class="input-field" required></div>
+          <div class="input-group"><label>End Date</label><input type="date" id="leaveEnd" class="input-field" required></div>
+        </div>
+        <div class="input-group">
+          <label>Leave Type</label>
+          <select id="leaveType" class="input-field">
+            <option value="casual">Casual Leave (2 per Month)</option>
+            <option value="sick">Sick Leave (Medical Certificate req.)</option>
+            <option value="half_day_fn">Half Day (Forenoon)</option>
+            <option value="half_day_an">Half Day (Afternoon)</option>
+            <option value="emergency">Emergency / Urgent Work</option>
+            <option value="maternity_paternity">Maternity / Paternity Leave</option>
+          </select>
+        </div>
+        <div class="input-group"><label>Detailed Reason</label><textarea id="leaveReason" class="input-field" rows="4" placeholder="Describe reason for leave..." required></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="closeLeaveModalBtn">Cancel</button>
+      <button class="btn btn-primary" id="submitLeaveBtn"><i class="fa-solid fa-paper-plane"></i> Submit Application</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./js/teacher.js"></script>
+
+<!-- STUDENT DETAIL MODAL -->
+<div id="studentDetailModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Student Information Detail</h2><button class="modal-close" onclick="document.getElementById('studentDetailModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="studentDetailContent"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('studentDetailModal').classList.remove('show')">Close</button></div>
+  </div>
+</div>
+
+<!-- EDIT STUDENT MODAL -->
+<div id="editStudentModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Edit Student Details</h2><button class="modal-close" onclick="document.getElementById('editStudentModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <form id="editStudentForm" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+        <input type="hidden" id="editStuUid">
+        <div class="input-group"><label>Full Name</label><input type="text" id="editStuName" class="input-field" required></div>
+        <div class="input-group"><label>Email</label><input type="email" id="editStuEmail" class="input-field" required readonly style="background:var(--bg-body); cursor:not-allowed"></div>
+        <div class="input-group"><label>Class</label><select id="editStuClass" class="input-field" required></select></div>
+        <div class="input-group"><label>Section</label><select id="editStuSection" class="input-field" required></select></div>
+        <div class="input-group"><label>Father's Name</label><input type="text" id="editStuFather" class="input-field" required></div>
+        <div class="input-group"><label>Mother's Name</label><input type="text" id="editStuMother" class="input-field" required></div>
+        <div class="input-group"><label>Contact No.</label><input type="tel" id="editStuContact" class="input-field" required></div>
+        <div class="input-group"><label>Address</label><input type="text" id="editStuAddress" class="input-field" required></div>
+        <div style="grid-column:span 2;display:flex;justify-content:flex-end;gap:.75rem;margin-top:.5rem">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('editStudentModal').classList.remove('show')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTE STUDENTS MODAL -->
+<div id="promoteModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 850px;">
+    <div class="modal-header">
+      <div><h2>Promote Students</h2><p style="font-size:.75rem; color:var(--text-muted)">Batch promotion to next academic level</p></div>
+      <button class="modal-close" onclick="document.getElementById('promoteModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; background:var(--bg-body); padding:1rem; border-radius:var(--r-md)">
+        <div class="input-group">
+          <label>Source Class (Current)</label>
+          <select id="promoteSourceClass" class="input-field" onchange="fetchPromoteStudentList()"><option value="">Select Class</option></select>
+        </div>
+        <div class="input-group">
+          <label>Target Class (Promotion To)</label>
+          <select id="promoteTargetClass" class="input-field"><option value="">Select Target Class</option></select>
+        </div>
+      </div>
+      
+      <div class="promote-list-wrap" style="max-height:400px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--r-md)">
+        <table class="data-table" style="margin:0">
+          <thead style="position:sticky; top:0; z-index:10">
+            <tr>
+              <th style="width:50px"><input type="checkbox" id="selectAllPromote" onclick="toggleSelectAllPromote(this)"></th>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Current Section</th>
+            </tr>
+          </thead>
+          <tbody id="promoteStudentListBody">
+            <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-muted)">Select a source class to view students.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between; align-items:center">
+      <span id="promoteCount" style="font-size:.8rem; font-weight:700; color:var(--brand-600)">0 Students Selected</span>
+      <div style="display:flex; gap:.75rem">
+        <button class="btn btn-secondary" onclick="document.getElementById('promoteModal').classList.remove('show')">Cancel</button>
+        <button class="btn btn-primary" id="confirmPromoteBtn" onclick="handleBulkPromotion()"><i class="fa-solid fa-arrow-up-right-dots"></i> Promote Selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('notifBtn').addEventListener('click',function(e){e.stopPropagation();document.getElementById('notifDropdown').classList.toggle('show');});
+document.addEventListener('click',function(){document.getElementById('notifDropdown').classList.remove('show');});
+</script>
+</body>
+</html>
