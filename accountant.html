@@ -11,8 +11,10 @@
 .fee-status-paid { background: var(--success-light); color: var(--success-dark); }
 .fee-status-partial { background: var(--warning-light); color: var(--warning-dark); }
 </style>
+<link rel="stylesheet" href="./css/responsive.css">
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="dashboard-layout">
 
 <!-- SIDEBAR -->
@@ -45,6 +47,9 @@
 <main class="main-content">
   <header class="top-header">
     <div class="header-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <div class="breadcrumb">
         <span class="breadcrumb-root">Nestvora</span>
         <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
