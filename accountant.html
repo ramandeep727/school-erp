@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Accountant Portal | EduManage Pro</title>
+<title>Accountant Portal | Nestvora</title>
 <link rel="stylesheet" href="./css/style.css">
 <link rel="stylesheet" href="./css/dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,7 +19,7 @@
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-    <div class="sidebar-logo-text"><h2>EduManage</h2><span>Accounts Dept</span></div>
+    <div class="sidebar-logo-text"><h2>Nestvora</h2><span>a bytenest product</span></div>
   </div>
   <nav class="sidebar-nav">
     <a href="#" class="nav-item active" id="navOverview"><i class="fa-solid fa-gauge-high"></i><span>Overview</span></a>
@@ -46,7 +46,7 @@
   <header class="top-header">
     <div class="header-left">
       <div class="breadcrumb">
-        <span class="breadcrumb-root">EduManage Pro</span>
+        <span class="breadcrumb-root">Nestvora</span>
         <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
         <span class="breadcrumb-curr" id="breadcrumbCurr">Accounts Overview</span>
       </div>
@@ -54,7 +54,7 @@
     <div class="header-right">
       <button class="btn btn-secondary btn-sm" id="downloadFeeStructure"><i class="fa-solid fa-file-pdf"></i> Fee Structure</button>
       <div class="header-divider"></div>
-      <div class="header-profile">
+      <div class="header-profile" onclick="window.showMyProfile()" style="cursor:pointer">
         <div class="header-avatar" id="headerAvatar">A</div>
         <div class="header-profile-info"><strong id="headerName">Accountant</strong><span>Admin</span></div>
       </div>
@@ -324,5 +324,14 @@
     </div>
   </div>
 </div>
+<!-- PROFILE DETAIL MODAL -->
+<div id="profileDetailModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header"><h2>My Staff Profile</h2><button class="modal-close" onclick="document.getElementById('profileDetailModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="profileDetailContent" style="padding:1.5rem"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('profileDetailModal').classList.remove('show')">Close</button></div>
+  </div>
+</div>
+
 </body>
 </html>

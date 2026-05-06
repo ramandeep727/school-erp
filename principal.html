@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Administrator Dashboard | EduManage Pro</title>
+<title>Administrator Dashboard | Nestvora</title>
 <link rel="stylesheet" href="./css/style.css">
 <link rel="stylesheet" href="./css/dashboard.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,7 +31,7 @@
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-    <div class="sidebar-logo-text"><h2>EduManage</h2><span>Pro Edition</span></div>
+    <div class="sidebar-logo-text"><h2>Nestvora</h2><span>a bytenest product</span></div>
   </div>
   <nav class="sidebar-nav">
     <a href="#" class="nav-item active" id="navOverview"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
@@ -64,7 +64,7 @@
   <header class="top-header">
     <div class="header-left">
       <div class="breadcrumb">
-        <span class="breadcrumb-root">EduManage Pro</span>
+        <span class="breadcrumb-root">Nestvora</span>
         <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
         <span class="breadcrumb-curr" id="breadcrumbCurr">Dashboard</span>
       </div>
@@ -87,7 +87,7 @@
         </div>
       </div>
       <div class="header-divider"></div>
-      <div class="header-profile">
+      <div class="header-profile" onclick="window.showMyProfile()" style="cursor:pointer">
         <div class="header-avatar" id="headerAvatar">P</div>
         <div class="header-profile-info"><strong id="headerName">Administrator</strong><span>Institutional Head</span></div>
       </div>
@@ -332,21 +332,75 @@
     <!-- USER MASTER -->
     <div id="sectionUsers" style="display:none">
       <div class="page-title-row"><div><h1>Staff & User Management</h1><p>Manage institutional staff and portal access</p></div></div>
-      <div class="content-card" style="max-width: 600px;">
+      <div class="content-card" style="max-width: 800px;">
         <div class="card-header"><h2><i class="fa-solid fa-user-gear"></i> Create Staff Account</h2></div>
         <div class="card-body">
-          <form id="staffForm" style="display:flex;flex-direction:column;gap:1.25rem">
+          <form id="staffForm" style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem">
             <div class="input-group"><label>Full Name</label><input type="text" id="staffName" class="input-field" placeholder="Staff member name" required></div>
             <div class="input-group"><label>Email Address</label><input type="email" id="staffEmail" class="input-field" placeholder="staff@school.edu" required></div>
-            <div class="input-group"><label>Department / Role</label>
-              <select id="staffRole" class="input-field" required>
-                <option value="accountant">Accountant / Finance</option>
-                <option value="principal">Assistant Principal</option>
+            
+            <div class="input-group"><label>Staff Category</label>
+              <select id="staffCategory" class="input-field" required>
+                <option value="">Select Category</option>
+                <option value="teaching">Teaching Staff</option>
+                <option value="non-teaching">Non-Teaching Staff</option>
+                <option value="admin">Administrative</option>
+                <option value="support">Support Staff</option>
               </select>
             </div>
-            <div class="input-group"><label>Portal Password</label><input type="text" id="staffPassword" class="input-field" placeholder="••••••••" required></div>
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Create Staff Account</button>
+            
+            <div class="input-group"><label>System Role / Portal Access</label>
+              <select id="staffRole" class="input-field" required>
+                <option value="teacher">Teacher Portal</option>
+                <option value="accountant">Accountant / Finance</option>
+                <option value="principal">Assistant Principal / Admin</option>
+              </select>
+            </div>
+
+            <div class="input-group"><label>Designation</label><input type="text" id="staffDesignation" class="input-field" placeholder="e.g. HOD Mathematics, Senior Clerk" required></div>
+            <div class="input-group"><label>Qualification</label><input type="text" id="staffQualification" class="input-field" placeholder="e.g. M.Sc, B.Ed" required></div>
+            
+            <div class="input-group"><label>Gender</label>
+              <select id="staffGender" class="input-field" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="input-group"><label>Contact Number</label><input type="tel" id="staffContact" class="input-field" placeholder="+91 00000-00000" required></div>
+            
+            <div class="input-group"><label>Date of Joining</label><input type="date" id="staffJoiningDate" class="input-field" required></div>
+            <div class="input-group"><label>Total Experience (Years)</label><input type="number" id="staffExperience" class="input-field" placeholder="0" min="0" required></div>
+            
+            <div class="input-group" style="grid-column: span 2;"><label>Residential Address</label><input type="text" id="staffAddress" class="input-field" placeholder="Complete address" required></div>
+            
+            <div class="input-group" style="grid-column: span 2;"><label>Portal Password</label><input type="text" id="staffPassword" class="input-field" placeholder="••••••••" required></div>
+            
+            <div style="grid-column: span 2; display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Create Staff Account</button>
+            </div>
           </form>
+        </div>
+      </div>
+
+      <div class="content-card" style="margin-top: 1.5rem;">
+        <div class="card-header"><h2><i class="fa-solid fa-address-book"></i> Staff Directory</h2></div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Staff Name</th>
+                <th>Category</th>
+                <th>Designation</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staffTableBody">
+              <tr><td colspan="6" style="text-align:center; padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Staff...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -609,5 +663,16 @@ document.addEventListener('click',function(){
   document.getElementById('notifDropdown').classList.remove('show');
 });
 </script>
+<!-- PROFILE DETAIL MODAL -->
+<div id="profileDetailModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header"><h2>My Profile Details</h2><button class="modal-close" onclick="document.getElementById('profileDetailModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="profileDetailContent" style="padding:1.5rem">
+      <!-- Profile content injected here -->
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('profileDetailModal').classList.remove('show')">Close</button></div>
+  </div>
+</div>
+
 </body>
 </html>
