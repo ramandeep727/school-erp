@@ -441,6 +441,66 @@ window.fetchNotices = async function() {
     }
 }
 
+window.showMyProfile = async function() {
+    const user = auth.currentUser;
+    if (!user) { alert("Session expired. Please login again."); return; }
+
+    const modal = document.getElementById('profileDetailModal');
+    const content = document.getElementById('profileDetailContent');
+    if(!modal || !content) return;
+
+    content.innerHTML = '<div style="text-align:center;padding:2rem"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p>Loading Profile...</p></div>';
+    modal.classList.add('show');
+
+    try {
+        const d = await getDoc(doc(db, "users", user.uid));
+        if (!d.exists()) {
+            content.innerHTML = '<div class="empty-state"><h3>Profile not found</h3><p>Your staff record could not be located.</p></div>';
+            return;
+        }
+
+        const u = d.data();
+        const avatar = u.name ? u.name.charAt(0).toUpperCase() : '?';
+        
+        content.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1rem; margin-bottom:2rem">
+                <div style="width:80px; height:80px; border-radius:50%; background:var(--brand-600); color:white; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:800; box-shadow:var(--shadow-lg)">${avatar}</div>
+                <div style="text-align:center">
+                    <h2 style="margin:0; color:var(--text-primary)">${u.name || 'Accountant'}</h2>
+                    <span class="badge badge-primary" style="margin-top:0.25rem">${(u.role || 'Accountant').toUpperCase()}</span>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr; gap:1rem; border-top:1px solid var(--border); padding-top:1.5rem">
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Email Address</span>
+                    <span style="font-weight:700">${u.email || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Staff Category</span>
+                    <span style="font-weight:700; color:var(--brand-600)">${(u.category || 'Administration').toUpperCase()}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Designation</span>
+                    <span style="font-weight:700">${u.designation || 'Accounts Manager'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Contact Number</span>
+                    <span style="font-weight:700">${u.contact || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Department</span>
+                    <span style="font-weight:700">Accounts & Finance</span>
+                </div>
+            </div>
+            <div style="margin-top:1.5rem; padding:1rem; background:var(--bg-muted); border-radius:var(--r-md); font-size:0.8rem">
+                <i class="fa-solid fa-lock" style="color:var(--brand-600)"></i> This profile contains sensitive financial access data. Ensure your session is logged out when not in use.
+            </div>
+        `;
+    } catch (err) {
+        content.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
+    }
+}
+
 logoutBtn.addEventListener('click', () => signOut(auth).then(() => window.location.href = 'index.html'));
 // --- FEE BILLING LOGIC ---
 window.toggleBillingScope = (scope) => {

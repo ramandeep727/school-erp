@@ -135,6 +135,7 @@ window.switchSection = (target) => {
     if (target === 'fees') fetchFeeData();
     if (target === 'staffleaves') fetchStaffLeaves();
     if (target === 'notices') window.fetchNotices();
+    if (target === 'users') window.fetchStaffList();
     if (target === 'settings') { fetchSettings(); fetchMessageLogs(); }
 };
 
@@ -417,18 +418,23 @@ async function handleExamSchedule(e) {
     alert("Examination Scheduled!"); e.target.reset(); fetchExams();
 }
 
-async function fetchExams() {
+window.fetchExams = async function() {
     const classSnapshot = await getDocs(query(collection(db, "classes"), orderBy("name")));
     const examClass = document.getElementById('examClass');
-    examClass.innerHTML = '<option value="">Select Class</option>';
-    classSnapshot.forEach(d => examClass.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+    if(examClass) {
+        examClass.innerHTML = '<option value="">Select Class</option>';
+        classSnapshot.forEach(d => examClass.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+    }
 
     const examsSnapshot = await getDocs(query(collection(db, "exams"), orderBy("date", "desc")));
-    const list = document.getElementById('examList'); list.innerHTML = '';
-    examsSnapshot.forEach(d => {
-        const ex = d.data();
-        list.innerHTML += `<tr><td><strong>${ex.subject}</strong></td><td>${ex.class}</td><td>${ex.date}</td><td><button class="btn btn-secondary" onclick="deleteDocById('exams', '${d.id}', fetchExams)">X</button></td></tr>`;
-    });
+    const list = document.getElementById('examList'); 
+    if(list) {
+        list.innerHTML = '';
+        examsSnapshot.forEach(d => {
+            const ex = d.data();
+            list.innerHTML += `<tr><td><strong>${ex.subject}</strong></td><td>${ex.class}</td><td>${ex.date}</td><td><button class="btn btn-secondary" onclick="window.deleteDocById('exams', '${d.id}', 'fetchExams')">X</button></td></tr>`;
+        });
+    }
 }
 
 // --- ACADEMIC MASTER ---
@@ -438,14 +444,16 @@ async function handleClassAdd(e) {
     e.target.reset(); fetchClasses();
 }
 
-async function fetchClasses() {
+window.fetchClasses = async function() {
     const snapshot = await getDocs(query(collection(db, "classes"), orderBy("name")));
     const list = document.getElementById('classList');
     const parentSelect = document.getElementById('sectionParentClass');
-    list.innerHTML = ''; parentSelect.innerHTML = '<option value="">Select Class</option>';
+    if(list) list.innerHTML = ''; 
+    if(parentSelect) parentSelect.innerHTML = '<option value="">Select Class</option>';
+    
     snapshot.forEach(d => {
-        list.innerHTML += `<tr><td>${d.data().name}</td><td><button class="btn btn-secondary" onclick="deleteDocById('classes', '${d.id}', fetchClasses)">X</button></td></tr>`;
-        parentSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
+        if(list) list.innerHTML += `<tr><td>${d.data().name}</td><td><button class="btn btn-secondary" onclick="window.deleteDocById('classes', '${d.id}', 'fetchClasses')">X</button></td></tr>`;
+        if(parentSelect) parentSelect.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
     });
 }
 
@@ -455,10 +463,13 @@ async function handleSectionAdd(e) {
     e.target.reset(); fetchSections();
 }
 
-async function fetchSections() {
+window.fetchSections = async function() {
     const snapshot = await getDocs(query(collection(db, "sections"), orderBy("parentClass")));
-    const list = document.getElementById('sectionList'); list.innerHTML = '';
-    snapshot.forEach(d => list.innerHTML += `<tr><td>${d.data().name}</td><td>${d.data().parentClass}</td><td><button class="btn btn-secondary" onclick="deleteDocById('sections', '${d.id}', fetchSections)">X</button></td></tr>`);
+    const list = document.getElementById('sectionList'); 
+    if(list) {
+        list.innerHTML = '';
+        snapshot.forEach(d => list.innerHTML += `<tr><td>${d.data().name}</td><td>${d.data().parentClass}</td><td><button class="btn btn-secondary" onclick="window.deleteDocById('sections', '${d.id}', 'fetchSections')">X</button></td></tr>`);
+    }
 }
 
 // --- NOTICE BOARD LOGIC ---
@@ -528,7 +539,7 @@ window.fetchNotices = async function() {
                 <td><strong>${n.title}</strong></td>
                 <td><span class="badge badge-neutral">${n.audience.toUpperCase()}</span></td>
                 <td style="text-align:center">${n.fileUrl ? `<a href="${n.fileUrl}" target="_blank">${fileIcon}</a>` : '---'}</td>
-                <td><button class="btn btn-secondary btn-sm" onclick="window.deleteDocById('notices', '${d.id}', window.fetchNotices)"><i class="fa-solid fa-trash-can"></i></button></td>
+                <td><button class="btn btn-secondary btn-sm" onclick="window.deleteDocById('notices', '${d.id}', 'fetchNotices')"><i class="fa-solid fa-trash-can"></i></button></td>
             </tr>`;
     });
 }
@@ -667,7 +678,7 @@ window.fetchStudentMaster = async function() {
                             <button class="btn btn-secondary btn-sm" onclick="window.showStudentDetails('${d.id}')" title="View Details"><i class="fa-solid fa-eye"></i></button>
                             <button class="btn btn-primary btn-sm" onclick="window.openEditStudentModal('${d.id}')" title="Edit Student"><i class="fa-solid fa-pencil"></i></button>
                             <button class="btn btn-secondary btn-sm" onclick="window.toggleStudentStatus('${d.id}', '${u.status || 'active'}')" title="Toggle Status"><i class="fa-solid fa-user-shield"></i></button> 
-                            <button class="btn btn-secondary btn-sm" onclick="window.deleteDocById('users', '${d.id}', window.fetchStudentMaster)" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                            <button class="btn btn-secondary btn-sm" onclick="window.deleteDocById('users', '${d.id}', 'fetchStudentMaster')" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </td>
                 </tr>`;
@@ -1026,6 +1037,16 @@ async function handleStaffAdd(e) {
     const email = document.getElementById('staffEmail').value;
     const role = document.getElementById('staffRole').value;
     const password = document.getElementById('staffPassword').value;
+    
+    // New fields
+    const category = document.getElementById('staffCategory').value;
+    const designation = document.getElementById('staffDesignation').value;
+    const qualification = document.getElementById('staffQualification').value;
+    const gender = document.getElementById('staffGender').value;
+    const contact = document.getElementById('staffContact').value;
+    const joiningDate = document.getElementById('staffJoiningDate').value;
+    const experience = document.getElementById('staffExperience').value;
+    const address = document.getElementById('staffAddress').value;
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Provisioning Account...';
@@ -1037,7 +1058,18 @@ async function handleStaffAdd(e) {
 
         // 2. Save in Firestore
         await setDoc(doc(db, "users", uid), {
-            uid, name, email, role,
+            uid, 
+            name, 
+            email, 
+            role,
+            category,
+            designation,
+            qualification,
+            gender,
+            contact,
+            joiningDate,
+            experience,
+            address,
             status: "active",
             timestamp: serverTimestamp()
         });
@@ -1045,6 +1077,7 @@ async function handleStaffAdd(e) {
         await secondaryAuth.signOut();
         alert(`Staff Account Created Successfully!\nRole: ${role}\nEmail: ${email}\nPassword: ${password}`);
         e.target.reset();
+        window.fetchStaffList();
     } catch (err) {
         alert("Error creating staff: " + err.message);
     } finally {
@@ -1053,20 +1086,164 @@ async function handleStaffAdd(e) {
     }
 }
 
+window.fetchStaffList = async function() {
+    const list = document.getElementById('staffTableBody');
+    if(!list) return;
+    list.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Staff...</td></tr>';
+
+    try {
+        const q = query(collection(db, "users"), where("role", "in", ["teacher", "accountant", "principal"]));
+        const snap = await getDocs(q);
+        list.innerHTML = '';
+        
+        if (snap.empty) {
+            list.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted)">No staff accounts found.</td></tr>';
+            return;
+        }
+
+        snap.forEach(d => {
+            const u = d.data();
+            const statusClass = (u.status || 'active') === 'active' ? 'badge-success' : 'badge-danger';
+            
+            list.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="font-weight:700">${u.name}</div>
+                        <div style="font-size:.7rem; color:var(--text-muted)">${u.email}</div>
+                    </td>
+                    <td><span class="badge badge-neutral">${(u.category || 'N/A').toUpperCase()}</span></td>
+                    <td>${u.designation || '---'}</td>
+                    <td>${u.contact || '---'}</td>
+                    <td><span class="badge ${statusClass}">${(u.status || 'ACTIVE').toUpperCase()}</span></td>
+                    <td>
+                        <div style="display:flex;gap:.4rem">
+                            <button class="btn btn-secondary btn-sm" onclick="alert('Full details: ${u.qualification || "N/A"}, Exp: ${u.experience || 0}yrs')" title="View Details"><i class="fa-solid fa-eye"></i></button>
+                            <button class="btn btn-secondary btn-sm" onclick="window.deleteDocById('users', '${d.id}', 'fetchStaffList')" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+        });
+    } catch (err) {
+        console.error("Staff List Error:", err);
+        list.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--danger)">Error loading staff directory.</td></tr>`;
+    }
+}
+
 window.deleteDocById = async (col, id, callback) => {
-    if(confirm("Confirm Delete?")) { await deleteDoc(doc(db, col, id)); callback(); }
+    console.log(`Attempting to delete from ${col}, ID: ${id}`);
+    if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+        try {
+            const docRef = doc(db, col, id);
+            
+            // First, check if it exists
+            const beforeSnap = await getDoc(docRef);
+            if (!beforeSnap.exists()) {
+                alert("Error: Record not found in database. It may have already been deleted.");
+                if (callback) window[callback] ? window[callback]() : (typeof callback === 'function' ? callback() : null);
+                return;
+            }
+
+            await deleteDoc(docRef);
+            
+            // Verify deletion
+            const afterSnap = await getDoc(docRef);
+            if (afterSnap.exists()) {
+                throw new Error("Verification failed: Document still exists after deletion attempt. Check your Firebase security rules.");
+            }
+
+            console.log("Delete successful and verified");
+            alert("Record deleted successfully.");
+            
+            if (callback) {
+                if (typeof callback === 'function') {
+                    callback();
+                } else if (typeof window[callback] === 'function') {
+                    window[callback]();
+                }
+            }
+        } catch (err) {
+            console.error("Delete Error:", err);
+            alert("Delete failed: " + err.message);
+        }
+    }
 };
 
-async function fetchTransport() {
+window.fetchTransport = async function() {
     const snap = await getDocs(query(collection(db, "transport"), orderBy("route")));
-    const list = document.getElementById('transportList'); list.innerHTML = '';
-    snap.forEach(d => list.innerHTML += `<tr><td>${d.data().route}</td><td>${d.data().vehicle}</td><td><button class="btn btn-secondary" onclick="deleteDocById('transport', '${d.id}', fetchTransport)">X</button></td></tr>`);
+    const list = document.getElementById('transportList'); 
+    if(list) {
+        list.innerHTML = '';
+        snap.forEach(d => {
+            const t = d.data();
+            list.innerHTML += `<tr><td>${t.route || '---'}</td><td>${t.vehicle || '---'}</td><td>${t.driver || '---'}</td><td>---</td><td><button class="btn btn-secondary" onclick="window.deleteDocById('transport', '${d.id}', 'fetchTransport')">X</button></td></tr>`;
+        });
+    }
 }
 
 async function handleTransportAdd(e) {
     e.preventDefault();
     await addDoc(collection(db, "transport"), { route: document.getElementById('route').value, vehicle: document.getElementById('vehicle').value, timestamp: serverTimestamp() });
     e.target.reset(); fetchTransport();
+}
+
+window.showMyProfile = async function() {
+    const user = auth.currentUser;
+    if (!user) { alert("Session expired. Please login again."); return; }
+
+    const modal = document.getElementById('profileDetailModal');
+    const content = document.getElementById('profileDetailContent');
+    if(!modal || !content) return;
+
+    content.innerHTML = '<div style="text-align:center;padding:2rem"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p>Loading Profile...</p></div>';
+    modal.classList.add('show');
+
+    try {
+        const d = await getDoc(doc(db, "users", user.uid));
+        if (!d.exists()) {
+            content.innerHTML = '<div class="empty-state"><h3>Profile not found</h3><p>Your user record could not be located.</p></div>';
+            return;
+        }
+
+        const u = d.data();
+        const avatar = u.name ? u.name.charAt(0).toUpperCase() : '?';
+        
+        content.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1rem; margin-bottom:2rem">
+                <div style="width:80px; height:80px; border-radius:50%; background:var(--brand-600); color:white; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:800; box-shadow:var(--shadow-lg)">${avatar}</div>
+                <div style="text-align:center">
+                    <h2 style="margin:0; color:var(--text-primary)">${u.name || 'User'}</h2>
+                    <span class="badge badge-primary" style="margin-top:0.25rem">${(u.role || 'Principal').toUpperCase()}</span>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr; gap:1rem; border-top:1px solid var(--border); padding-top:1.5rem">
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Email Address</span>
+                    <span style="font-weight:700">${u.email || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Staff Category</span>
+                    <span style="font-weight:700; color:var(--brand-600)">${(u.category || 'Administration').toUpperCase()}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Designation</span>
+                    <span style="font-weight:700">${u.designation || 'Institutional Head'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Contact Number</span>
+                    <span style="font-weight:700">${u.contact || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Status</span>
+                    <span class="badge badge-success">${(u.status || 'ACTIVE').toUpperCase()}</span>
+                </div>
+            </div>
+            <div style="margin-top:1.5rem; padding:1rem; background:var(--bg-muted); border-radius:var(--r-md); font-size:0.8rem">
+                <i class="fa-solid fa-shield-halved" style="color:var(--brand-600)"></i> This is your private institutional profile. If you notice any discrepancies, please contact the IT Administrator.
+            </div>
+        `;
+    } catch (err) {
+        content.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
+    }
 }
 
 async function fetchFeeData() {

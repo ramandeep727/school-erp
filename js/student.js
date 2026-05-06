@@ -307,4 +307,72 @@ window.fetchNotices = async function() {
     }
 }
 
+window.showMyProfile = async function() {
+    const user = auth.currentUser;
+    if (!user) { alert("Session expired. Please login again."); return; }
+
+    const modal = document.getElementById('profileDetailModal');
+    const content = document.getElementById('profileDetailContent');
+    if(!modal || !content) return;
+
+    content.innerHTML = '<div style="text-align:center;padding:2rem"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p>Loading Profile...</p></div>';
+    modal.classList.add('show');
+
+    try {
+        const d = await getDoc(doc(db, "users", user.uid));
+        if (!d.exists()) {
+            content.innerHTML = '<div class="empty-state"><h3>Profile not found</h3><p>Your student record could not be located.</p></div>';
+            return;
+        }
+
+        const u = d.data();
+        const avatar = u.name ? u.name.charAt(0).toUpperCase() : '?';
+        
+        content.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1rem; margin-bottom:2rem">
+                <div style="width:80px; height:80px; border-radius:var(--r-full); background:linear-gradient(135deg,var(--brand-600),#8b5cf6); color:white; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:800; box-shadow:var(--shadow-lg)">${avatar}</div>
+                <div style="text-align:center">
+                    <h2 style="margin:0; color:var(--text-primary)">${u.name || 'Student'}</h2>
+                    <span class="badge badge-info" style="margin-top:0.25rem">STUDENT ID: ${u.studentID || '---'}</span>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr; gap:1rem; border-top:1px solid var(--border); padding-top:1.5rem">
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Current Class</span>
+                    <span style="font-weight:700">${u.class} - ${u.section}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Email</span>
+                    <span style="font-weight:700">${u.email || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Father's Name</span>
+                    <span style="font-weight:700">${u.fatherName || '---'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Mother's Name</span>
+                    <span style="font-weight:700">${u.motherName || '---'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Contact Number</span>
+                    <span style="font-weight:700">${u.contact || 'N/A'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Address</span>
+                    <span style="font-weight:700; font-size:0.8rem; text-align:right">${u.address || '---'}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span style="color:var(--text-muted); font-weight:600">Fees Balance</span>
+                    <span style="font-weight:700; color:${(u.pendingFees || 0) > 0 ? 'var(--danger-dark)' : 'var(--success-dark)'}">₹${(u.pendingFees || 0).toLocaleString()}</span>
+                </div>
+            </div>
+            <div style="margin-top:1.5rem; padding:1rem; background:var(--info-light); border-radius:var(--r-md); font-size:0.75rem; color:var(--brand-700); font-weight:600">
+                <i class="fa-solid fa-graduation-cap"></i> Keep your profile data updated for accurate institutional records and communication.
+            </div>
+        `;
+    } catch (err) {
+        content.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${err.message}</p></div>`;
+    }
+}
+
 logoutBtn.addEventListener('click', () => signOut(auth).then(() => window.location.href = 'index.html'));
