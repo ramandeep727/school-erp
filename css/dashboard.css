@@ -533,29 +533,4 @@
 .tab-btn:hover:not(.active) { color:var(--text-primary); background:var(--bg-hover); }
 
 /* ── RESPONSIVE ──────────────────────── */
-@media (max-width:1100px) {
-  .sidebar { width:72px; }
-  .sidebar-logo-text, .nav-item span,
-  .nav-section-label, .sidebar-user-info,
-  .nav-badge { display:none; }
-  .sidebar-header { justify-content:center; padding:1.25rem .875rem; }
-  .nav-item { justify-content:center; padding:.75rem; }
-  .nav-item.active::before { display:none; }
-  .sidebar-user { justify-content:center; }
-  .main-content { margin-left:72px; }
-  .btn-logout span { display:none; }
-}
-
-@media (max-width:768px) {
-  .main-content { margin-left:0; }
-  .sidebar { transform:translateX(-100%); width:260px; }
-  .sidebar.open { transform:translateX(0); }
-  .sidebar-logo-text, .nav-item span,
-  .nav-section-label, .sidebar-user-info,
-  .nav-badge { display:block; }
-  .header-search { display:none; }
-  .page-content { padding:1.25rem; }
-  .stats-grid { grid-template-columns:1fr 1fr; }
-  .form-grid-2, .form-grid-3, .form-grid-4 { grid-template-columns:1fr; }
-  .col-span-2 { grid-column:span 1; }
-}
+/* All responsive / mobile rules are in css/responsive.css */
