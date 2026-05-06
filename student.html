@@ -24,8 +24,10 @@
   .id-card{box-shadow:none;border:1px solid #ccc;}
 }
 </style>
+<link rel="stylesheet" href="./css/responsive.css">
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="dashboard-layout">
 
 <!-- SIDEBAR -->
@@ -55,6 +57,9 @@
 <main class="main-content">
   <header class="top-header">
     <div class="header-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <div class="breadcrumb">
         <span class="breadcrumb-root">Nestvora</span>
         <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
@@ -248,6 +253,17 @@
 <script>
 document.getElementById('notifBtn').addEventListener('click',function(e){e.stopPropagation();document.getElementById('notifDropdown').classList.toggle('show');});
 document.addEventListener('click',function(){document.getElementById('notifDropdown').classList.remove('show');});
+// hamburger sidebar toggle
+(function(){
+  var btn=document.getElementById('hamburgerBtn');
+  var sidebar=document.querySelector('.sidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('show');document.body.style.overflow='hidden';}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('show');document.body.style.overflow='';}
+  if(btn) btn.addEventListener('click',function(e){e.stopPropagation();sidebar.classList.contains('open')?closeSidebar():openSidebar();});
+  if(overlay) overlay.addEventListener('click',closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){item.addEventListener('click',function(){if(window.innerWidth<=768)closeSidebar();});});
+})();
 </script>
 <!-- PROFILE DETAIL MODAL -->
 <div id="profileDetailModal" class="modal-overlay">

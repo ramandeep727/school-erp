@@ -338,5 +338,18 @@
   </div>
 </div>
 
+<script>
+// hamburger sidebar toggle
+(function(){
+  var btn=document.getElementById('hamburgerBtn');
+  var sidebar=document.querySelector('.sidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('show');document.body.style.overflow='hidden';}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('show');document.body.style.overflow='';}
+  if(btn) btn.addEventListener('click',function(e){e.stopPropagation();sidebar.classList.contains('open')?closeSidebar():openSidebar();});
+  if(overlay) overlay.addEventListener('click',closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){item.addEventListener('click',function(){if(window.innerWidth<=768)closeSidebar();});});
+})();
+</script>
 </body>
 </html>
