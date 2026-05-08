@@ -320,11 +320,259 @@
   .data-table td { padding: .75rem .875rem; }
 }
 
-/* ══════════════════════════════════════════════════════════
-   PRINT – Hide nav elements
-═══════════════════════════════════════════════════════════ */
 @media print {
   .sidebar, .top-header, .no-print,
   .hamburger-btn, .sidebar-overlay { display: none !important; }
   .main-content { margin-left: 0 !important; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   STUDENT KIDS PORTAL – Tablet (≤ 1100px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .xp-widget { gap: 1rem; }
+  .xp-badges { display: none; }
+  .xp-divider:last-of-type { display: none; }
+  .kids-greeting-banner { padding: 1.25rem 1.5rem; }
+  .section-mascot-banner { padding: 1rem 1.25rem; gap: 1rem; }
+  .section-mascot-banner svg { width: 56px; height: 56px; }
+
+  /* Sidebar mini mascot hidden on icon rail */
+  .sidebar-mini-mascot { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   STUDENT KIDS PORTAL – Mobile (≤ 768px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Greeting Banner ──────────────────────────────── */
+  .kids-greeting-banner {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1.25rem;
+  }
+  .kids-greeting-banner > div {
+    gap: 1rem !important;
+  }
+  .kids-greeting-banner h2 {
+    font-size: 1.1rem !important;
+  }
+  .kids-greeting-banner p { font-size: .8rem; }
+  .kids-mascot svg { width: 60px !important; height: 60px !important; }
+
+  /* ── XP Widget ────────────────────────────────────── */
+  .xp-widget {
+    flex-wrap: wrap;
+    gap: .875rem;
+    padding: 1rem 1.125rem;
+    border-radius: 16px;
+    margin-bottom: 1.25rem;
+  }
+  .xp-streak { flex-direction: row; align-items: center; gap: .5rem; }
+  .xp-streak .streak-num { font-size: 1.4rem; }
+  .xp-streak .streak-fire { font-size: 1rem; }
+  .xp-divider { display: none; }
+  .xp-bar-wrap { width: 100%; min-width: unset; }
+  .xp-badges { display: none; }
+  .xp-level { font-size: .65rem !important; }
+
+  /* ── Section Mascot Banner ────────────────────────── */
+  .section-mascot-banner {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    gap: .875rem;
+    margin-bottom: 1.25rem;
+  }
+  .section-mascot-banner svg { width: 50px !important; height: 50px !important; }
+  .section-mascot-banner h2 { font-size: 1.05rem !important; }
+  .section-mascot-banner p  { font-size: .78rem !important; }
+  .section-mascot-banner .sbadge { font-size: .68rem; padding: .2rem .6rem; margin-top: .3rem; }
+
+  /* ── Today's Schedule Card ────────────────────────── */
+  .today-schedule-card { border-radius: 16px; }
+  .schedule-period { padding: .75rem 1rem; gap: .75rem; }
+  .period-time { font-size: .68rem; min-width: 48px; }
+  .period-subject { font-size: .82rem; }
+  .period-teacher { font-size: .68rem; }
+
+  /* ── Quick Action Cards (new 140px ones) ──────────── */
+  div[style*="minmax(140px"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: .75rem !important;
+  }
+  .action-card { padding: 1rem .75rem !important; border-radius: 16px !important; }
+  .action-card div[style*="52px"] {
+    width: 42px !important; height: 42px !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+  }
+  .action-card span { font-size: .72rem !important; }
+
+  /* ── Background Doodles – reduce on mobile ────────── */
+  .kids-bg-doodles { opacity: 0.5; }
+  .doodle-pencil, .doodle-rocket, .doodle-book { display: none; }
+
+  /* ── Sidebar mini mascot ──────────────────────────── */
+  .sidebar-mini-mascot { display: none; }
+
+  /* ── Report Card grid ─────────────────────────────── */
+  div[style*="grid-template-columns:1fr 1fr"][id="printableReportCard"] { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   STUDENT KIDS – Small Mobile (≤ 480px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Quick actions: 2 columns on tiny screens */
+  div[style*="minmax(140px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: .625rem !important;
+  }
+
+  .kids-greeting-banner > div { flex-direction: column; align-items: flex-start; }
+  .kids-mascot { display: none; }
+
+  .section-mascot-banner svg { display: none; }
+  .section-mascot-banner { padding: .875rem 1rem; }
+
+  .xp-widget { padding: .875rem 1rem; }
+
+  /* ID card full width */
+  .id-card { width: 100% !important; max-width: 100% !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ALL PORTALS – Global Layout Fixes (Tablet ≤ 1100px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  /* Fee grid 1fr 2fr → stacked */
+  div[style*="grid-template-columns:1fr 2fr"],
+  div[style*="grid-template-columns: 1fr 2fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* Four-column form grids */
+  .form-grid-4 { grid-template-columns: repeat(2,1fr) !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ALL PORTALS – Global Mobile Fixes (≤ 768px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Form grids ──────────────────────────────────── */
+  .form-grid-2, .form-grid-3, .form-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+  .col-span-2, .col-span-full { grid-column: span 1 !important; }
+
+  /* ── Tab bars ─────────────────────────────────────── */
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+  .tab-btn { white-space: nowrap; flex-shrink: 0; font-size: .78rem; padding: .6rem .875rem; }
+
+  /* ── Content card headers ─────────────────────────── */
+  .card-header { flex-direction: column; align-items: flex-start; }
+  .card-header-actions { width: 100%; justify-content: flex-end; }
+
+  /* ── Stats: always 2 cols on mobile (not 1) ────────── */
+  .stats-grid { grid-template-columns: 1fr 1fr !important; gap: .75rem; }
+
+  /* ── Page content padding ──────────────────────────── */
+  .page-content { padding: .875rem !important; }
+
+  /* ── Timetable horizontal scroll ──────────────────── */
+  .timetable-wrap { overflow-x: auto; min-width: 600px; }
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* ── Principal / Teacher filter bars ──────────────── */
+  .filter-bar, [style*="display:flex;gap:1rem;align-items:flex-end"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .filter-bar .btn, .filter-bar .input-field { width: 100%; }
+
+  /* ── Header right items ────────────────────────────── */
+  .header-right { gap: .375rem; }
+
+  /* ── Notification dropdown ─────────────────────────── */
+  .notif-dropdown { width: 92vw; right: -40px; }
+
+  /* ── Inline flex action rows ───────────────────────── */
+  [style*="display:flex;gap:.75rem"] { flex-wrap: wrap; }
+  [style*="display: flex; gap: .75rem"] { flex-wrap: wrap; }
+
+  /* ── Principal / Accountant fee payment grid ───────── */
+  [style*="grid-template-columns:1fr 2fr"],
+  [style*="grid-template-columns: 1fr 2fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Report card print section ─────────────────────── */
+  #printableReportCard [style*="grid-template-columns:1fr 1fr"],
+  #printableReportCard [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  #printableReportCard [style*="text-align:right"] { text-align: left !important; }
+
+  /* ── Signature row ──────────────────────────────────── */
+  [style*="justify-content:space-between;border-top:1px dashed"] {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  /* ── Empty state ────────────────────────────────────── */
+  .empty-state { padding: 2.5rem 1rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ALL PORTALS – Small Mobile (≤ 480px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  html { font-size: 13.5px; }
+
+  /* Stats: single column on tiny screens */
+  .stats-grid { grid-template-columns: 1fr !important; gap: .625rem; }
+  .stat-card {
+    flex-direction: row !important;
+    align-items: center;
+    gap: .875rem;
+    padding: .875rem 1rem;
+  }
+  .stat-card-top { margin-bottom: 0; }
+  .stat-value { font-size: 1.35rem !important; }
+  .stat-label { font-size: .68rem !important; }
+
+  /* Page title smaller */
+  .page-title-row h1 { font-size: 1rem !important; }
+
+  /* Buttons full width in title row */
+  .page-title-row .btn { width: 100%; justify-content: center; }
+
+  /* Card body tighter */
+  .card-body { padding: .875rem; }
+  .card-header { padding: .75rem .875rem; }
+  .card-header h2 { font-size: .85rem !important; }
+
+  /* Table font */
+  .data-table th, .data-table td {
+    font-size: .7rem;
+    padding: .5rem .625rem;
+    white-space: nowrap;
+  }
+
+  /* Broader notif dropdown */
+  .notif-dropdown { width: 98vw; right: -10px; left: auto; }
+
+  /* Principal/Teacher table action buttons */
+  .data-table .btn { padding: .3rem .6rem !important; font-size: .65rem !important; }
+
+  /* Form inputs */
+  .input-field { font-size: 16px; } /* prevents iOS auto-zoom */
+
+  /* Top header compact */
+  .top-header { height: 56px; padding: 0 .75rem; }
+  .header-avatar { width: 30px !important; height: 30px !important; font-size: .75rem !important; }
+  .hamburger-btn { width: 36px !important; height: 36px !important; }
+}
+
