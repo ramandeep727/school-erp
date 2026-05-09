@@ -30,9 +30,11 @@
   z-index: 999;
   opacity: 0;
   transition: opacity .25s ease;
+  pointer-events: none;  /* never block taps when invisible */
 }
 .sidebar-overlay.show {
   opacity: 1;
+  pointer-events: auto; /* only intercept taps when visible */
 }
 
 /* ── MODAL RESPONSIVENESS ────────────────────────────────── */
@@ -150,8 +152,15 @@
   .sidebar.open .sidebar-user { justify-content: flex-start !important; }
   .sidebar.open .sidebar-header { justify-content: flex-start !important; padding: 1.5rem 1.25rem !important; }
 
-  /* Sidebar overlay shows + high z-index */
-  .sidebar-overlay { display: block; z-index: 1040 !important; }
+  /* Sidebar overlay shows + high z-index — pointer-events toggled by .show */
+  .sidebar-overlay {
+    display: block;
+    z-index: 1040 !important;
+    pointer-events: none;   /* invisible overlay must NOT block touches */
+  }
+  .sidebar-overlay.show {
+    pointer-events: auto;   /* only block touches when actually visible */
+  }
 
   /* Main content takes full width */
   .main-content { margin-left: 0 !important; }
