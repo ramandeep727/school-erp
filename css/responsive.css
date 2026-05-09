@@ -105,6 +105,12 @@
     grid-template-columns: 1fr !important;
   }
 }
+/* Override: at true mobile (≤768px) the icon-rail overflow must NOT apply */
+@media (max-width: 768px) {
+  /* sidebar open/closed handled entirely by the mobile block below */
+  .sidebar { overflow: hidden; }
+  .sidebar.open { overflow-y: auto; overflow-x: hidden; }
+}
 
 /* ══════════════════════════════════════════════════════════
    MOBILE  (≤ 768px)
@@ -113,17 +119,23 @@
 
   /* ── Sidebar: slide-in drawer ────────────────────── */
   .sidebar {
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 260px !important;
-    height: 100vh;
-    z-index: 1000;
-    transform: translateX(-100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    overflow-y: auto;
+    height: 100vh !important;
+    z-index: 1050 !important;
+    transform: translateX(-100%) !important;
+    transition: transform .3s cubic-bezier(.4,0,.2,1) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
+  /* ── CRITICAL: open state must win with !important ── */
   .sidebar.open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
+    box-shadow: 8px 0 32px rgba(0,0,0,0.35) !important;
   }
   /* Restore text labels inside open sidebar */
   .sidebar.open .sidebar-logo-text,
@@ -133,19 +145,19 @@
   .sidebar.open .btn-logout span {
     display: block !important;
   }
-  .sidebar.open .nav-item { justify-content: flex-start; padding: .625rem .875rem; }
-  .sidebar.open .nav-item.active::before { display: block; }
-  .sidebar.open .sidebar-user { justify-content: flex-start; }
-  .sidebar.open .sidebar-header { justify-content: flex-start; padding: 1.5rem 1.25rem; }
+  .sidebar.open .nav-item { justify-content: flex-start !important; padding: .625rem .875rem !important; }
+  .sidebar.open .nav-item.active::before { display: block !important; }
+  .sidebar.open .sidebar-user { justify-content: flex-start !important; }
+  .sidebar.open .sidebar-header { justify-content: flex-start !important; padding: 1.5rem 1.25rem !important; }
 
-  /* Sidebar overlay shows */
-  .sidebar-overlay { display: block; }
+  /* Sidebar overlay shows + high z-index */
+  .sidebar-overlay { display: block; z-index: 1040 !important; }
 
   /* Main content takes full width */
   .main-content { margin-left: 0 !important; }
 
-  /* Hamburger visible */
-  .hamburger-btn { display: flex; }
+  /* Hamburger always visible on mobile */
+  .hamburger-btn { display: flex !important; }
 
   /* ── Top Header ──────────────────────────────────── */
   .top-header {

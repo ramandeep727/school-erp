@@ -185,6 +185,21 @@ body::before {
   box-shadow: 0 4px 16px rgba(255,71,87,0.3) !important;
 }
 
+/* ── MOBILE SIDEBAR GUARD (never break the slide-in) ───── */
+@media (max-width: 768px) {
+  /* Do NOT apply any transform to sidebar itself on mobile */
+  .sidebar {
+    /* transform is handled entirely by responsive.css open/close states */
+    transition: transform .3s cubic-bezier(.4,0,.2,1) !important;
+  }
+  /* Ensure open state wins over all kids theme rules */
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+  /* Hide decorative mini mascot on mobile */
+  .sidebar-mini-mascot { display: none !important; }
+}
+
 /* ── TOP HEADER ──────────────────────────────────────────── */
 .top-header {
   background: rgba(255,255,255,0.95) !important;
