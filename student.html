@@ -438,9 +438,26 @@
         </div>
       </div>
       <div class="content-card">
-        <div class="card-header"><h2><i class="fa-solid fa-wallet"></i> 💳 Financial Statement</h2></div>
+        <div class="card-header">
+          <h2><i class="fa-solid fa-wallet"></i> 💳 My Fee Status</h2>
+          <span class="badge badge-amber" id="feeStatusBadge">Checking...</span>
+        </div>
         <div class="card-body">
-          <div class="empty-state"><i class="fa-solid fa-circle-check" style="color:var(--success)"></i><h3>All dues cleared! 🎉</h3><p>No outstanding fees for the current term.</p></div>
+          <div id="feeListContainer" style="display:flex; flex-direction:column; gap:1rem">
+            <!-- Dynamic fees will load here -->
+            <p style="text-align:center;color:var(--text-muted);font-size:.8rem">Fetching fee records...</p>
+          </div>
+          
+          <!-- Fee Summary Card (Visible if dues exist) -->
+          <div id="feeSummaryCard" style="margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#fff1f2,#ffe4e6); border:2.5px dashed #fecdd3; border-radius:20px; display:none">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div>
+                <p style="font-size:.7rem; font-weight:800; color:#9f1239; text-transform:uppercase">Total Outstanding Dues</p>
+                <h1 style="font-size:2rem; color:#e11d48; margin:0" id="totalDuesAmount">₹ 0.00</h1>
+              </div>
+              <button class="btn btn-primary" onclick="alert('Redirecting to Payment Gateway...')">💳 Pay Total Dues</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
