@@ -31,10 +31,12 @@
   opacity: 0;
   transition: opacity .25s ease;
   pointer-events: none;  /* never block taps when invisible */
+  visibility: hidden;
 }
 .sidebar-overlay.show {
   opacity: 1;
   pointer-events: auto; /* only intercept taps when visible */
+  visibility: visible;
 }
 
 /* ── MODAL RESPONSIVENESS ────────────────────────────────── */
@@ -128,15 +130,17 @@
     height: 100vh !important;
     z-index: 1050 !important;
     transform: translateX(-100%) !important;
-    transition: transform .3s cubic-bezier(.4,0,.2,1) !important;
+    transition: transform .3s cubic-bezier(.4,0,.2,1), visibility 0.3s !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     display: flex !important;
     flex-direction: column !important;
+    visibility: hidden !important; /* Hide physically from touch engine */
   }
   /* ── CRITICAL: open state must win with !important ── */
   .sidebar.open {
     transform: translateX(0) !important;
+    visibility: visible !important;
     box-shadow: 8px 0 32px rgba(0,0,0,0.35) !important;
   }
   /* Restore text labels inside open sidebar */
@@ -156,9 +160,11 @@
   .sidebar-overlay {
     display: none;
     z-index: 1040 !important;
+    visibility: hidden;
   }
   .sidebar-overlay.show {
     display: block !important;
+    visibility: visible !important;
     pointer-events: auto !important;
   }
 
