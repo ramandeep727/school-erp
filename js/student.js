@@ -201,54 +201,80 @@ async function populateReportCard() {
 }
 
 async function fetchFeeStatus() {
-    const list = document.getElementById('sectionFees');
-    if(!list) return;
+    const listContainer = document.getElementById('feeListContainer');
+    const summaryCard = document.getElementById('feeSummaryCard');
+    const totalDuesEl = document.getElementById('totalDuesAmount');
+    const statusBadge = document.getElementById('feeStatusBadge');
+    
+    if(!listContainer) return;
 
-    // Get latest student data for fresh balance
-    const docSnap = await getDoc(doc(db, "users", currentStudent.id));
-    const u = docSnap.data();
-    const pending = u.pendingFees || 0;
+    try {
+        // 1. Refresh latest student data for fresh balance
+        const docSnap = await getDoc(doc(db, "users", currentStudent.id));
+        const u = docSnap.data();
+        const pending = Number(u.pendingFees || 0);
 
-    const feeQuery = query(collection(db, "fees"), where("studentID", "==", u.studentID), orderBy("timestamp", "desc"));
-    const feeSnap = await getDocs(feeQuery);
+        // 2. Fetch payment history
+        const feeQuery = query(collection(db, "fees"), where("studentID", "==", u.studentID || ''), orderBy("timestamp", "desc"));
+        const feeSnap = await getDocs(feeQuery);
 
-    let historyHtml = '';
-    feeSnap.forEach(d => {
-        const f = d.data();
-        historyHtml += `
-            <div style="display:flex;justify-content:space-between;padding:1rem;border-bottom:1px solid var(--border)">
-                <div>
-                    <strong style="font-size:.9rem">${f.feeType.toUpperCase()}</strong>
-                    <p style="font-size:.75rem;color:var(--text-muted)">${f.date}</p>
+        listContainer.innerHTML = ''; // Clear "Fetching..." message
+
+        // 3. Handle Pending Dues (Logic for newly admitted students)
+        if (pending > 0) {
+            summaryCard.style.display = 'block';
+            totalDuesEl.textContent = `₹ ${pending.toLocaleString()}`;
+            statusBadge.textContent = 'Dues Pending';
+            statusBadge.className = 'badge badge-danger';
+            
+            // Add a "Dues" card for the current term
+            listContainer.innerHTML += `
+                <div style="padding:1.25rem; border:2px solid #fecdd3; border-radius:16px; background:#fff5f5; display:flex; justify-content:space-between; align-items:center; animation: kids-pop 0.4s ease">
+                    <div>
+                        <strong style="color:#e11d48; font-size:1rem">Academic Year Dues (Pending)</strong>
+                        <p style="font-size:.8rem; color:#9f1239; margin-top:.2rem">Includes Admission, Tuition & Library Fees</p>
+                    </div>
+                    <div style="text-align:right">
+                        <strong style="font-size:1.2rem; color:#e11d48">₹${pending.toLocaleString()}</strong>
+                        <p style="font-size:.65rem; font-weight:800; color:#fb7185">NOT PAID</p>
+                    </div>
                 </div>
-                <div style="text-align:right">
-                    <strong style="color:var(--success-dark)">₹${Number(f.amount).toLocaleString()}</strong>
-                    <p style="font-size:.7rem;color:var(--success);font-weight:700">PAID</p>
-                </div>
-            </div>`;
-    });
+            `;
+        } else {
+            summaryCard.style.display = 'none';
+            statusBadge.textContent = 'All Clear';
+            statusBadge.className = 'badge badge-success';
+        }
 
-    list.innerHTML = `
-        <div class="page-title-row"><div><h1>Fees & Financial Status</h1><p>Track your fee payments and dues</p></div></div>
-        
-        <div style="display:grid;grid-template-columns:1fr 2fr;gap:1.5rem">
-            <div class="content-card" style="height:fit-content">
-                <div class="card-header"><h2><i class="fa-solid fa-wallet"></i> Current Balance</h2></div>
-                <div class="card-body" style="text-align:center;padding:2rem">
-                    <div style="font-size:2.5rem;font-weight:800;color:${pending > 0 ? 'var(--danger-dark)' : 'var(--success-dark)'}">₹${pending.toLocaleString()}</div>
-                    <p style="font-weight:700;color:var(--text-muted);text-transform:uppercase;font-size:.75rem;margin-top:.5rem">Total Outstanding Dues</p>
-                    ${pending > 0 ? `<button class="btn btn-primary" style="margin-top:1.5rem;width:100%"><i class="fa-solid fa-credit-card"></i> Pay Online</button>` : ''}
-                </div>
-            </div>
-
-            <div class="content-card">
-                <div class="card-header"><h2><i class="fa-solid fa-clock-rotate-left"></i> Payment History</h2></div>
-                <div class="card-body" style="padding:0">
-                    ${historyHtml || '<div style="padding:3rem;text-align:center;color:var(--text-muted)">No payment history found.</div>'}
-                </div>
-            </div>
-        </div>
-    `;
+        // 4. Show Payment History
+        if (!feeSnap.empty) {
+            listContainer.innerHTML += `<h3 style="font-size:1rem; font-weight:800; margin:1.5rem 0 0.5rem; color:var(--kids-indigo)">Recent Payments</h3>`;
+            feeSnap.forEach(d => {
+                const f = d.data();
+                listContainer.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border-radius:14px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:0.5rem">
+                        <div>
+                            <strong style="font-size:.9rem; color:#166534">${f.feeType.toUpperCase()}</strong>
+                            <p style="font-size:.75rem; color:#15803d">${f.date || 'Recently'}</p>
+                        </div>
+                        <div style="text-align:right">
+                            <strong style="color:#16a34a">₹${Number(f.amount).toLocaleString()}</strong>
+                            <p style="font-size:.65rem; color:#22c55e; font-weight:800">SUCCESSFUL</p>
+                        </div>
+                    </div>`;
+            });
+        } else if (pending <= 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-circle-check" style="color:var(--kids-green); font-size:3rem"></i>
+                    <h3>Yay! No Dues!</h3>
+                    <p>You have cleared all your fees for this term. Great job!</p>
+                </div>`;
+        }
+    } catch (err) {
+        console.error("Fee fetch error:", err);
+        listContainer.innerHTML = `<p style="color:red; text-align:center">Error loading fees: ${err.message}</p>`;
+    }
 }
 
 // --- NOTICE BOARD LOGIC ---
