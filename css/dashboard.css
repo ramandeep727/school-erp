@@ -152,11 +152,15 @@
   flex:1; margin-left:260px;
   display:flex; flex-direction:column;
   min-height:100vh;
+  position: relative;
+  z-index: 10;
 }
 
 /* ── TOP HEADER ──────────────────────── */
 .top-header {
   height:68px; flex-shrink:0;
+  position: sticky; top: 0;
+  z-index: 1000;
   background:rgba(255,255,255,.92);
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);

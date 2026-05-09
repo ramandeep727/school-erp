@@ -666,8 +666,8 @@ body::before {
 .kids-bg-doodles {
   position: fixed;
   inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none !important;
+  z-index: -1 !important; /* Move behind EVERYTHING */
   overflow: hidden;
 }
 .kids-bg-doodles svg {
