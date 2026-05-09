@@ -107,9 +107,11 @@
 
 /* Footer */
 .sidebar-footer {
-  padding:1rem .75rem;
-  border-top:1px solid var(--sidebar-border);
-  flex-shrink:0;
+  margin-top: auto; /* Push to bottom */
+  padding: 1rem 0.75rem 1.5rem; /* Extra bottom padding for mobile browsers */
+  border-top: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.05);
 }
 
 .sidebar-user {

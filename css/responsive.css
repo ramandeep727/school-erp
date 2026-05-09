@@ -178,11 +178,12 @@
   .sidebar.open .nav-item span,
   .sidebar.open .nav-label,
   .sidebar.open .sidebar-user-info,
-  .sidebar.open .btn-logout,
-  .sidebar.open .btn-logout span {
+  .sidebar.open .sidebar-footer,
+  .sidebar.open .btn-logout {
     display: flex !important;
   }
   .sidebar.open .btn-logout span { display: inline-block !important; }
+  .sidebar.open .sidebar-footer { flex-direction: column !important; z-index: 10 !important; }
   .sidebar.open .nav-item { justify-content: flex-start !important; padding: .625rem .875rem !important; }
   .sidebar.open .nav-item.active::before { display: block !important; }
   .sidebar.open .sidebar-user { justify-content: flex-start !important; }
