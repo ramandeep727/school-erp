@@ -206,60 +206,66 @@ async function fetchFeeStatus() {
     const totalDuesEl = document.getElementById('totalDuesAmount');
     const statusBadge = document.getElementById('feeStatusBadge');
     
-    if(!listContainer) return;
+    if(!listContainer || !currentStudent) return;
 
     try {
-        // 1. Refresh latest student data for fresh balance
+        statusBadge.textContent = 'Fetching...';
+        
+        // 1. Get student balance from profile
         const docSnap = await getDoc(doc(db, "users", currentStudent.id));
+        if (!docSnap.exists()) throw new Error("Student profile not found");
+        
         const u = docSnap.data();
         const pending = Number(u.pendingFees || 0);
+        const sID = u.studentID || '';
 
-        // 2. Fetch payment history
-        const feeQuery = query(collection(db, "fees"), where("studentID", "==", u.studentID || ''), orderBy("timestamp", "desc"));
+        // 2. Fetch payment history (Simplified query to avoid index errors)
+        const feeQuery = query(collection(db, "fees"), where("studentID", "==", sID));
         const feeSnap = await getDocs(feeQuery);
 
-        listContainer.innerHTML = ''; // Clear "Fetching..." message
+        listContainer.innerHTML = ''; 
 
-        // 3. Handle Pending Dues (Logic for newly admitted students)
+        // 3. Update Status Badge & Summary
         if (pending > 0) {
-            summaryCard.style.display = 'block';
-            totalDuesEl.textContent = `₹ ${pending.toLocaleString()}`;
             statusBadge.textContent = 'Dues Pending';
             statusBadge.className = 'badge badge-danger';
-            
-            // Add a "Dues" card for the current term
+            summaryCard.style.display = 'block';
+            totalDuesEl.textContent = `₹ ${pending.toLocaleString()}`;
+
             listContainer.innerHTML += `
                 <div style="padding:1.25rem; border:2px solid #fecdd3; border-radius:16px; background:#fff5f5; display:flex; justify-content:space-between; align-items:center; animation: kids-pop 0.4s ease">
                     <div>
-                        <strong style="color:#e11d48; font-size:1rem">Academic Year Dues (Pending)</strong>
-                        <p style="font-size:.8rem; color:#9f1239; margin-top:.2rem">Includes Admission, Tuition & Library Fees</p>
+                        <strong style="color:#e11d48; font-size:1rem">Outstanding Dues (Pending)</strong>
+                        <p style="font-size:.8rem; color:#9f1239; margin-top:.2rem">Academic Term 2024-25</p>
                     </div>
                     <div style="text-align:right">
                         <strong style="font-size:1.2rem; color:#e11d48">₹${pending.toLocaleString()}</strong>
-                        <p style="font-size:.65rem; font-weight:800; color:#fb7185">NOT PAID</p>
+                        <p style="font-size:.65rem; font-weight:800; color:#fb7185">UNPAID</p>
                     </div>
-                </div>
-            `;
+                </div>`;
         } else {
-            summaryCard.style.display = 'none';
             statusBadge.textContent = 'All Clear';
             statusBadge.className = 'badge badge-success';
+            summaryCard.style.display = 'none';
         }
 
-        // 4. Show Payment History
+        // 4. Show History
         if (!feeSnap.empty) {
-            listContainer.innerHTML += `<h3 style="font-size:1rem; font-weight:800; margin:1.5rem 0 0.5rem; color:var(--kids-indigo)">Recent Payments</h3>`;
-            feeSnap.forEach(d => {
+            listContainer.innerHTML += `<h3 style="font-size:1rem; font-weight:800; margin:1.5rem 0 0.5rem; color:var(--kids-indigo)">Payment History</h3>`;
+            // Sort manually to avoid Firestore composite index requirement
+            const sortedDocs = feeSnap.docs.sort((a, b) => (b.data().timestamp || 0) - (a.data().timestamp || 0));
+            
+            sortedDocs.forEach(d => {
                 const f = d.data();
                 listContainer.innerHTML += `
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border-radius:14px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:0.5rem">
                         <div>
-                            <strong style="font-size:.9rem; color:#166534">${f.feeType.toUpperCase()}</strong>
-                            <p style="font-size:.75rem; color:#15803d">${f.date || 'Recently'}</p>
+                            <strong style="font-size:.9rem; color:#166534">${(f.feeType || 'Payment').toUpperCase()}</strong>
+                            <p style="font-size:.75rem; color:#15803d">${f.date || 'Success'}</p>
                         </div>
                         <div style="text-align:right">
-                            <strong style="color:#16a34a">₹${Number(f.amount).toLocaleString()}</strong>
-                            <p style="font-size:.65rem; color:#22c55e; font-weight:800">SUCCESSFUL</p>
+                            <strong style="color:#16a34a">₹${Number(f.amount || 0).toLocaleString()}</strong>
+                            <p style="font-size:.65rem; color:#22c55e; font-weight:800">PAID</p>
                         </div>
                     </div>`;
             });
@@ -267,13 +273,15 @@ async function fetchFeeStatus() {
             listContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="fa-solid fa-circle-check" style="color:var(--kids-green); font-size:3rem"></i>
-                    <h3>Yay! No Dues!</h3>
-                    <p>You have cleared all your fees for this term. Great job!</p>
+                    <h3>No Fees Due! 🎉</h3>
+                    <p>Your account is fully cleared. Have a wonderful day!</p>
                 </div>`;
         }
     } catch (err) {
-        console.error("Fee fetch error:", err);
-        listContainer.innerHTML = `<p style="color:red; text-align:center">Error loading fees: ${err.message}</p>`;
+        console.error("Fee error:", err);
+        statusBadge.textContent = 'Error';
+        statusBadge.className = 'badge badge-danger';
+        listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation" style="color:var(--kids-red)"></i><h3>Unable to load fees</h3><p>${err.message}</p></div>`;
     }
 }
 
