@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Accountant Portal | Nestvora</title>
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/dashboard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.fee-status-pending { background: var(--danger-light); color: var(--danger-dark); }
+.fee-status-paid { background: var(--success-light); color: var(--success-dark); }
+.fee-status-partial { background: var(--warning-light); color: var(--warning-dark); }
+</style>
+<link rel="stylesheet" href="./css/responsive.css">
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="dashboard-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+    <div class="sidebar-logo-text"><h2>Nestvora</h2><span>a bytenest product</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" id="navOverview"><i class="fa-solid fa-gauge-high"></i><span>Overview</span></a>
+    <a href="#" class="nav-item" id="navFeeCollection"><i class="fa-solid fa-hand-holding-dollar"></i><span>Fee Collection</span></a>
+    <a href="#" class="nav-item" id="navFeeBilling"><i class="fa-solid fa-file-invoice"></i><span>Fee Billing</span></a>
+    <a href="#" class="nav-item" id="navStudentLedger"><i class="fa-solid fa-book"></i><span>Student Ledger</span></a>
+    <a href="#" class="nav-item" id="navStudentMaster"><i class="fa-solid fa-id-card"></i><span>Student Master</span></a>
+    <a href="#" class="nav-item" id="navDueReports"><i class="fa-solid fa-file-invoice"></i><span>Due Reports</span></a>
+    <a href="#" class="nav-item" id="navNotices"><i class="fa-solid fa-bullhorn"></i><span>Notice Board</span></a>
+    <a href="#" class="nav-item" id="navExpenses"><i class="fa-solid fa-money-bill-transfer"></i><span>Expenses</span></a>
+    <a href="#" class="nav-item" id="navReports"><i class="fa-solid fa-chart-line"></i><span>Financial Reports</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar" id="userAvatar">A</div>
+      <div class="sidebar-user-info"><strong id="userName">Accountant</strong><span>Financial Manager</span></div>
+    </div>
+    <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign Out</span></button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+  <header class="top-header">
+    <div class="header-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="breadcrumb">
+        <span class="breadcrumb-root">Nestvora</span>
+        <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i></span>
+        <span class="breadcrumb-curr" id="breadcrumbCurr">Accounts Overview</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-secondary btn-sm" id="downloadFeeStructure"><i class="fa-solid fa-file-pdf"></i> Fee Structure</button>
+      <div class="header-divider"></div>
+      <div class="header-profile" onclick="window.showMyProfile()" style="cursor:pointer">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-profile-info"><strong id="headerName">Accountant</strong><span>Admin</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content animate-fade-in">
+    <!-- OVERVIEW -->
+    <div id="sectionOverview">
+      <div class="page-title-row">
+        <div><h1>Accounts Dashboard</h1><p id="currentDate" style="color:var(--text-muted)"></p></div>
+        <div style="display:flex;gap:.75rem">
+          <button class="btn btn-secondary btn-sm" onclick="switchSection('feebilling')"><i class="fa-solid fa-file-invoice"></i> Generate Bills</button>
+          <button class="btn btn-primary btn-sm" onclick="switchSection('feecollection')"><i class="fa-solid fa-plus"></i> Collect Fee</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card stat-blue"><div class="stat-value" id="totalCollected">₹0</div><div class="stat-label">Total Collected (MTD)</div></div>
+        <div class="stat-card stat-red"><div class="stat-value" id="totalPending">₹0</div><div class="stat-label">Outstanding Fees</div></div>
+        <div class="stat-card stat-green"><div class="stat-value" id="todayCollection">₹0</div><div class="stat-label">Today's Collection</div></div>
+        <div class="stat-card stat-amber"><div class="stat-value" id="pendingInvoices">0</div><div class="stat-label">Overdue Invoices</div></div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-top:1.5rem">
+        <div class="content-card">
+          <div class="card-header"><h2><i class="fa-solid fa-clock-rotate-left"></i> Transaction Activity</h2></div>
+          <div id="recentFeesList" style="padding:1.25rem">
+            <p style="text-align:center;color:var(--text-muted);font-size:.8rem">No recent payments recorded.</p>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-header"><h2><i class="fa-solid fa-bullhorn"></i> Important Notices</h2><button class="btn btn-ghost btn-sm" onclick="switchSection('notices')">View All</button></div>
+          <div id="noticeBriefList" style="padding:1.25rem; display:flex; flex-direction:column; gap:1rem">
+            <p style="text-align:center;color:var(--text-muted);font-size:.8rem">Fetching latest notices...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEE BILLING -->
+    <div id="sectionFeebilling" style="display:none">
+      <div class="page-title-row"><div><h1>Fee Billing & Invoicing</h1><p>Generate fee demands for students, classes or entire school</p></div></div>
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-file-invoice"></i> Generate New Fee Demand</h2></div>
+        <div class="card-body">
+          <form id="billingForm" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+            <div class="input-group">
+              <label>Billing Scope</label>
+              <select id="billScope" class="input-field" onchange="window.toggleBillingScope(this.value)">
+                <option value="student">Individual Student</option>
+                <option value="class">Specific Class</option>
+                <option value="all">Entire School</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Fee Category</label>
+              <select id="billCategory" class="input-field" required>
+                <option value="Tuition Fee">Tuition Fee</option>
+                <option value="Transport Fee">Transport Fee</option>
+                <option value="Examination Fee">Examination Fee</option>
+                <option value="Library Fee">Library Fee</option>
+                <option value="Uniform/Books">Uniform / Books</option>
+                <option value="Other">Other / Miscellaneous</option>
+              </select>
+            </div>
+
+            <div id="billClassWrap" class="input-group" style="display:block">
+              <label>Select Class</label>
+              <select id="billClass" class="input-field"><option value="">Choose Class</option></select>
+            </div>
+
+            <div id="billStudentWrap" class="input-group" style="display:block">
+              <label>Select Student</label>
+              <select id="billStudent" class="input-field"><option value="">Choose Student</option></select>
+            </div>
+
+            <div class="input-group"><label>Fee Amount (₹)</label><input type="number" id="billAmount" class="input-field" placeholder="e.g. 5000" required></div>
+            <div class="input-group"><label>Due Date</label><input type="date" id="billDueDate" class="input-field" required></div>
+            
+            <div class="input-group" style="grid-column:span 2"><label>Billing Note (Optional)</label><input type="text" id="billNote" class="input-field" placeholder="e.g. For March 2026 session"></div>
+
+            <div style="grid-column:span 2; display:flex; justify-content:flex-end; gap:.75rem; margin-top:1rem">
+              <button type="reset" class="btn btn-secondary">Reset Form</button>
+              <button type="submit" class="btn btn-primary" id="generateBillBtn"><i class="fa-solid fa-check-double"></i> Generate Fee Demand</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEE COLLECTION -->
+    <div id="sectionFeecollection" style="display:none">
+      <div class="page-title-row"><div><h1>Enterprise POS Collection</h1><p>Record multi-tender payments and generate double-entry receipts</p></div></div>
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-cash-register"></i> Point of Sale Counter</h2></div>
+        <div class="card-body">
+          <form id="paymentForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1.5rem;align-items:flex-end; background:var(--bg-muted); padding:1.5rem; border-radius:var(--r-md)">
+            <div class="input-group"><label>Student ID</label><input type="text" id="payStudentSearch" class="input-field" placeholder="Enter Student ID" required></div>
+            <div class="input-group"><label>Primary Fee Head</label><select id="payFeeType" class="input-field"><option value="tuition">Tuition Fee</option><option value="transport">Transport Fee</option><option value="exam">Exam Fee</option><option value="arrears">Previous Arrears</option></select></div>
+            <div class="input-group"><label>Payment Mode</label><select id="payMode" class="input-field"><option value="cash">Cash</option><option value="upi">UPI / QR</option><option value="cheque">Cheque</option><option value="card">Card POS</option></select></div>
+            <div class="input-group"><label>Amount (₹)</label><input type="number" id="payAmount" class="input-field" placeholder="0.00" min="1" required></div>
+            <div class="input-group" style="grid-column: span 3"><label>Transaction Note / Cheque No.</label><input type="text" id="payNote" class="input-field" placeholder="Optional notes for the receipt"></div>
+            <button type="submit" class="btn btn-primary" style="height: 42px;"><i class="fa-solid fa-check"></i> Process & Post</button>
+          </form>
+          
+          <div style="margin-top:2rem; border-top:1px solid var(--border); padding-top:1.5rem;">
+             <h3><i class="fa-solid fa-shield-halved" style="color:var(--success)"></i> Audit Trail Secured</h3>
+             <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem">Every transaction recorded here automatically generates an immutable Receipt, performs FIFO invoice settlement, and posts the corresponding debit/credit entries to the General Ledger.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENT LEDGER -->
+    <div id="sectionStudentledger" style="display:none">
+        <div class="page-title-row">
+          <div><h1>Student Financial Ledger</h1><p>Comprehensive statement of account and transaction history</p></div>
+        </div>
+        
+        <!-- Search & Summary -->
+        <div class="content-card" style="margin-bottom: 1.5rem; background: var(--bg-muted);">
+            <div class="card-body" style="display:grid; grid-template-columns: 1fr 2fr; gap:2rem; align-items:center;">
+                <div>
+                    <label style="font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; display:block;">Select Student to View Ledger</label>
+                    <div style="display:flex; gap:0.5rem">
+                        <input type="text" id="ledgerSearchInput" class="input-field" placeholder="Enter Student ID" style="flex:1">
+                        <button class="btn btn-primary" onclick="fetchEnterpriseLedger()"><i class="fa-solid fa-magnifying-glass"></i> View</button>
+                    </div>
+                </div>
+                
+                <div id="ledgerSummaryBox" style="display:none; grid-template-columns: 1fr 1fr; gap:1.5rem; background:var(--bg-body); padding:1rem; border-radius:var(--r-md); border:1px solid var(--border)">
+                    <div>
+                        <span style="font-size:0.8rem; color:var(--text-muted)">Student Name</span>
+                        <h3 id="ledgerStudentName" style="margin:0; font-size:1.1rem; color:var(--brand-700)">---</h3>
+                    </div>
+                    <div style="display:flex; gap:1.5rem">
+                        <div>
+                            <span style="font-size:0.8rem; color:var(--text-muted)">Total Outstanding</span>
+                            <h3 id="ledgerPending" style="margin:0; color:var(--danger-dark)">₹0</h3>
+                        </div>
+                        <div>
+                            <span style="font-size:0.8rem; color:var(--text-muted)">Advance Balance</span>
+                            <h3 id="ledgerAdvance" style="margin:0; color:var(--success-dark)">₹0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="card-header" style="display:flex; justify-content:space-between">
+                <h2><i class="fa-solid fa-file-invoice-dollar"></i> Statement of Account</h2>
+                <button class="btn btn-secondary btn-sm" onclick="window.printLedger()" id="printLedgerBtn" style="display:none"><i class="fa-solid fa-print"></i> Print Statement</button>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Date</th><th>Document No.</th><th>Type</th><th>Particulars</th><th>Debit (Due)</th><th>Credit (Paid)</th><th>Balance</th></tr></thead>
+                    <tbody id="ledgerTableBody">
+                        <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted)">Please search for a student to view their ledger.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- DUE REPORTS -->
+    <div id="sectionDuereports" style="display:none">
+        <div class="page-title-row">
+            <div><h1>Outstanding Due Reports</h1><p>List of all students with pending fee balances</p></div>
+            <button class="btn btn-secondary btn-sm" onclick="fetchDueReports()"><i class="fa-solid fa-arrows-rotate"></i> Refresh List</button>
+        </div>
+        <div class="content-card">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Student ID</th><th>Student Name</th><th>Class & Section</th><th>Pending Balance</th><th>Last Updated</th></tr></thead>
+                    <tbody id="dueReportsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTICES SECTION -->
+    <div id="sectionNotices" style="display:none">
+      <div class="page-title-row"><div><h1>School Notice Board</h1><p>General announcements and circulars</p></div></div>
+      <div id="fullNoticeList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:1.5rem">
+        <!-- Full notices load here -->
+      </div>
+    </div>
+
+    <!-- STUDENT MASTER -->
+    <div id="sectionStudentMaster" style="display:none">
+      <div class="page-title-row">
+        <div><h1>Student Master Registry</h1><p>Comprehensive database of all enrolled students</p></div>
+        <div style="display:flex;gap:.75rem">
+          <button class="btn btn-primary btn-sm" onclick="openPromoteModal()"><i class="fa-solid fa-arrow-up-right-dots"></i> Promote Students</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetStudentFilters()"><i class="fa-solid fa-arrows-rotate"></i> Reset Filters</button>
+        </div>
+      </div>
+
+      <div class="content-card" style="margin-bottom: 1.5rem; background: var(--bg-body); border: 1.5px solid var(--border);">
+        <div class="card-body" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+          <div class="input-group" style="flex: 2; min-width: 200px;">
+            <label>Search Directory</label>
+            <div class="header-search" style="width: 100%; margin: 0; border: 1.5px solid var(--border);">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="stuSearch" placeholder="Search by Name, Email or ID..." oninput="fetchStudentMaster()">
+            </div>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter by Class</label>
+            <select id="stuFilterClass" class="input-field" onchange="fetchStudentMaster()"><option value="">All Classes</option></select>
+          </div>
+          <div class="input-group" style="flex: 1; min-width: 150px;">
+            <label>Filter by Section</label>
+            <select id="stuFilterSection" class="input-field" onchange="fetchStudentMaster()"><option value="">All Sections</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="card-header"><h2><i class="fa-solid fa-users"></i> Enrolled Students</h2></div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Student ID</th><th>Full Name</th><th>Class / Section</th><th>Email</th><th>Actions</th></tr></thead>
+            <tbody id="studentMasterTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<script type="module" src="./js/accountant.js"></script>
+
+<!-- STUDENT DETAIL MODAL -->
+<div id="studentDetailModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Student Comprehensive Profile</h2><button class="modal-close" onclick="document.getElementById('studentDetailModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="studentDetailContent"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('studentDetailModal').classList.remove('show')">Close Profile</button></div>
+  </div>
+</div>
+
+<!-- EDIT STUDENT MODAL -->
+<div id="editStudentModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header"><h2>Edit Student Details</h2><button class="modal-close" onclick="document.getElementById('editStudentModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <form id="editStudentForm" style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+        <input type="hidden" id="editStuUid">
+        <div class="input-group"><label>Full Name</label><input type="text" id="editStuName" class="input-field" required></div>
+        <div class="input-group"><label>Email</label><input type="email" id="editStuEmail" class="input-field" required readonly style="background:var(--bg-body); cursor:not-allowed"></div>
+        <div class="input-group"><label>Class</label><select id="editStuClass" class="input-field" required></select></div>
+        <div class="input-group"><label>Section</label><select id="editStuSection" class="input-field" required></select></div>
+        <div class="input-group"><label>Father's Name</label><input type="text" id="editStuFather" class="input-field" required></div>
+        <div class="input-group"><label>Mother's Name</label><input type="text" id="editStuMother" class="input-field" required></div>
+        <div class="input-group"><label>Contact No.</label><input type="tel" id="editStuContact" class="input-field" required></div>
+        <div class="input-group"><label>Address</label><input type="text" id="editStuAddress" class="input-field" required></div>
+        <div style="grid-column:span 2;display:flex;justify-content:flex-end;gap:.75rem;margin-top:.5rem">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('editStudentModal').classList.remove('show')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTE STUDENTS MODAL -->
+<div id="promoteModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 850px;">
+    <div class="modal-header">
+      <div><h2>Promote Students</h2><p style="font-size:.75rem; color:var(--text-muted)">Batch promotion to next academic level</p></div>
+      <button class="modal-close" onclick="document.getElementById('promoteModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; background:var(--bg-body); padding:1rem; border-radius:var(--r-md)">
+        <div class="input-group">
+          <label>Source Class (Current)</label>
+          <select id="promoteSourceClass" class="input-field" onchange="fetchPromoteStudentList()"><option value="">Select Class</option></select>
+        </div>
+        <div class="input-group">
+          <label>Target Class (Promotion To)</label>
+          <select id="promoteTargetClass" class="input-field"><option value="">Select Target Class</option></select>
+        </div>
+      </div>
+      
+      <div class="promote-list-wrap" style="max-height:400px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--r-md)">
+        <table class="data-table" style="margin:0">
+          <thead style="position:sticky; top:0; z-index:10">
+            <tr>
+              <th style="width:50px"><input type="checkbox" id="selectAllPromote" onclick="toggleSelectAllPromote(this)"></th>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Current Section</th>
+            </tr>
+          </thead>
+          <tbody id="promoteStudentListBody">
+            <tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-muted)">Select a source class to view students.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between; align-items:center">
+      <span id="promoteCount" style="font-size:.8rem; font-weight:700; color:var(--brand-600)">0 Students Selected</span>
+      <div style="display:flex; gap:.75rem">
+        <button class="btn btn-secondary" onclick="document.getElementById('promoteModal').classList.remove('show')">Cancel</button>
+        <button class="btn btn-primary" id="confirmPromoteBtn" onclick="handleBulkPromotion()"><i class="fa-solid fa-arrow-up-right-dots"></i> Promote Selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PROFILE DETAIL MODAL -->
+<div id="profileDetailModal" class="modal-overlay">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header"><h2>My Staff Profile</h2><button class="modal-close" onclick="document.getElementById('profileDetailModal').classList.remove('show')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="profileDetailContent" style="padding:1.5rem"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('profileDetailModal').classList.remove('show')">Close</button></div>
+  </div>
+</div>
+
+<script>
+// hamburger sidebar toggle
+(function(){
+  var btn=document.getElementById('hamburgerBtn');
+  var sidebar=document.querySelector('.sidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('show');document.body.style.overflow='hidden';}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('show');document.body.style.overflow='';}
+  if(btn) btn.addEventListener('click',function(e){e.stopPropagation();sidebar.classList.contains('open')?closeSidebar():openSidebar();});
+  if(overlay) overlay.addEventListener('click',closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){item.addEventListener('click',function(){if(window.innerWidth<=768)closeSidebar();});});
+})();
+</script>
+</body>
+</html>
